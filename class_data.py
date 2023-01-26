@@ -10,12 +10,9 @@
 
 import pandas as pd
 import numpy as np
-from sklearn.impute import KNNImputer
 from sklearn.impute import SimpleImputer
 from sklearn import preprocessing
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LinearRegression, _passive_aggressive
 
 
 
@@ -34,7 +31,7 @@ class data_clean(BaseEstimator, TransformerMixin):
         #########################################################
         # Dropeo columnas que no me sirven.
         #########################################################
-
+        
         col_drop = ['id','url','region_url','image_url', 'description']
         X = X.drop(columns=col_drop)
 
@@ -48,14 +45,6 @@ class data_clean(BaseEstimator, TransformerMixin):
         # Reemplazo los valores faltantes de laundry y parking 
         # como ukn.
         #########################################################
-
-        for i in X['laundry_options']:
-            if i == None:
-                i = 'ukn'
-
-        for i in X['parking_options']:
-            if i == None:
-                i = 'ukn'
 
         #########################################################
         # Codificacion valores de las columnas que tienen str.
@@ -71,14 +60,31 @@ class data_clean(BaseEstimator, TransformerMixin):
                 df[column] = df[column].replace({i : count})
                 count += 1
 
-        columns = ['region','laundry_options','parking_options','type','state']
+        columns = ['region','state','laundry_options','parking_options']
         for i in columns:
             codificacion(X, i)
 
+        df_a_imputar = X[['laundry_options','parking_options']]
+
+        imputer = SimpleImputer(strategy='most_frequent')
+        imputados = imputer.fit_transform(df_a_imputar)
+        imputados_Simple = pd.DataFrame(imputados, columns=[['laundry_options','parking_options']])
+
+        X[['parking_options','laundry_options']]= imputados_Simple[['parking_options','laundry_options']]
+
         #########################################################
+        # get dummies para laundry parking y type
         #########################################################
-        print(1)
-        print(X.shape)
+
+        X = pd.get_dummies(X, columns=['laundry_options','parking_options','type'])
+
+        #########################################################
+        
+        lista_columnas = [x for x in X]
+
+        if 'price' in lista_columnas:
+            X = X.dropna()
+    
         return X
 
 class outliers(BaseEstimator, TransformerMixin):
@@ -133,9 +139,6 @@ class category_price(BaseEstimator, TransformerMixin):
 
           X['category_price'] = np.where(X['price']<=999,1,0)
           X = X.drop(columns=['price'])
-
-          # Dropeo valores nulos para el train.
-          X = X.dropna()
 
         return X
 
