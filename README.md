@@ -23,3 +23,7 @@ En el *Jupyter Notebook* llamado **MLSupervisado.ipynb** se encontrará el scrip
 
 La petición que fue dada por Henry, era que este script entregue un archivo .csv con las predicciones.
 En un principio se debía crear la columna *category_price*, la cual va a tener las etiquetas que clasifica las propiedades en 'low' = 1, si su precio era menor a 999USD, de la misma manera si su precio era mayor o igual a 1000USD tomaba como valor en category_price = 0.
+
+
+link del drive para la data:
+https://drive.google.com/drive/folders/1o3EnOtI6sgxVlqILgyqTtao8n35y8EUU?usp=share_link
